@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UBTS-Link</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">UBTS-Link</span>
+      <span class="tag">ISBT 128 blood-unit tracking</span>
+    </div>
+    <div class="site-picker">
+      <label for="site">Working as</label>
+      <select id="site"></select>
+      <span id="site-kind" class="pill"></span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="scan" role="tab">Scan station</button>
+    <button class="tab" data-tab="inventory" role="tab">Inventory &amp; rules</button>
+    <button class="tab" data-tab="units" role="tab">Units</button>
+    <button class="tab" data-tab="requisitions" role="tab">Requisitions</button>
+    <button class="tab" data-tab="alerts" role="tab">Alerts <span id="alert-count" class="badge" hidden></span></button>
+  </nav>
+
+  <main>
+    <!-- ============ SCAN STATION ============ -->
+    <section id="tab-scan" class="panel active">
+      <div class="scan-grid">
+        <div class="card">
+          <h2>Scan a unit</h2>
+          <div class="actions" id="actions">
+            <button data-action="RECEIVE" class="act active">Intake</button>
+            <button data-action="DISPATCH" class="act">Dispatch to hospital</button>
+            <button data-action="DISPENSE" class="act">Dispense</button>
+            <button data-action="EXPIRE" class="act">Expired</button>
+            <button data-action="DISCARD" class="act">Discard</button>
+          </div>
+          <p id="action-hint" class="hint"></p>
+
+          <form id="scan-form" autocomplete="off">
+            <div class="row">
+              <div id="dest-wrap" hidden>
+                <label for="dest">Destination hospital</label>
+                <select id="dest"></select>
+              </div>
+              <div>
+                <label for="reference">Reference <span class="muted">(optional, e.g. ward or patient ID)</span></label>
+                <input id="reference" maxlength="128" placeholder="e.g. ward-3">
+              </div>
+            </div>
+            <label for="barcode">Barcode data <span class="muted">(scanner sends this and Enter automatically)</span></label>
+            <textarea id="barcode" rows="2" placeholder="Scan the DIN label. Intake also needs the product code and expiry labels, e.g. =W12340412345600=&lt;E0150V00&amp;&gt;0123661300" spellcheck="false"></textarea>
+            <div class="form-actions">
+              <button type="submit" class="primary">Submit scan</button>
+              <button type="button" id="parse-btn" class="ghost">Check label</button>
+              <span id="scan-status" class="muted"></span>
+            </div>
+          </form>
+
+          <h3>Results</h3>
+          <ol id="feed" class="feed"></ol>
+        </div>
+
+        <div class="card">
+          <h2>Stock at this site</h2>
+          <p class="muted" id="stock-note"></p>
+          <div id="stock-mini"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INVENTORY ============ -->
+    <section id="tab-inventory" class="panel">
+      <div class="card">
+        <div class="head">
+          <h2>Stock by product family</h2>
+          <button id="refresh-stock" class="ghost">Refresh</button>
+        </div>
+        <div id="stock-table"></div>
+      </div>
+      <div class="card" id="rules-card">
+        <h2>Reorder rules</h2>
+        <p class="muted">Requisitions are raised automatically when usable stock plus incoming and requested units falls below the minimum. The order brings stock back up to par.</p>
+        <form id="rule-form" class="inline">
+          <div><label>Product family</label><input id="rule-family" maxlength="5" placeholder="E0150" required></div>
+          <div><label>Minimum</label><input id="rule-min" type="number" min="0" value="4" required></div>
+          <div><label>Par</label><input id="rule-par" type="number" min="0" value="8" required></div>
+          <button type="submit" class="primary">Save rule</button>
+        </form>
+        <div id="rules-table"></div>
+      </div>
+    </section>
+
+    <!-- ============ UNITS ============ -->
+    <section id="tab-units" class="panel">
+      <div class="card">
+        <div class="head">
+          <h2>Units held here</h2>
+          <div class="filters">
+            <select id="unit-status">
+              <option value="IN_STOCK">In stock</option>
+              <option value="IN_TRANSIT">In transit</option>
+              <option value="DISPENSED">Dispensed</option>
+              <option value="EXPIRED">Expired</option>
+              <option value="DISCARDED">Discarded</option>
+              <option value="">All</option>
+            </select>
+            <input id="unit-lookup" placeholder="Look up DIN, e.g. W123404123456" maxlength="13">
+            <button id="unit-lookup-btn" class="ghost">Look up</button>
+          </div>
+        </div>
+        <div id="units-table"></div>
+      </div>
+      <div class="card" id="history-card" hidden>
+        <h2 id="history-title"></h2>
+        <div id="history"></div>
+      </div>
+    </section>
+
+    <!-- ============ REQUISITIONS ============ -->
+    <section id="tab-requisitions" class="panel">
+      <div class="card" id="new-req-card">
+        <h2>Raise a requisition</h2>
+        <form id="req-form" class="inline">
+          <div><label>Product family</label><input id="req-family" maxlength="5" placeholder="E0150" required></div>
+          <div><label>Quantity</label><input id="req-qty" type="number" min="1" value="2" required></div>
+          <div class="grow"><label>Reason</label><input id="req-reason" maxlength="500" placeholder="e.g. theatre list"></div>
+          <button type="submit" class="primary">Send to hub</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="head">
+          <h2 id="req-title">Requisitions</h2>
+          <select id="req-filter">
+            <option value="OPEN">Open</option>
+            <option value="FULFILLED">Fulfilled</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="">All</option>
+          </select>
+        </div>
+        <div id="req-table"></div>
+      </div>
+    </section>
+
+    <!-- ============ ALERTS ============ -->
+    <section id="tab-alerts" class="panel">
+      <div class="card">
+        <div class="head">
+          <h2>Notifications</h2>
+          <button id="run-sweep" class="primary">Run checks now</button>
+        </div>
+        <p class="muted">Checks run automatically on a schedule and after each stock change: expiry digests and automatic requisitions to hubs.</p>
+        <div id="alerts-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
