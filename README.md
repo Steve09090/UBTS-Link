@@ -20,14 +20,43 @@ The source is split by layer and responsibility:
 
 Use the role selector in the top bar to switch between seeded demo accounts. Verification and role changes are demonstrations only, not secure authentication.
 
-## Run
+## Run the system
 
-Serve the folder over HTTP so browser ES modules can load. For example, from this directory run `py -m http.server 4173`, then open `http://localhost:4173`.
+Follow these steps to run the browser demo on Windows:
 
-The demo persists in browser `localStorage` and synchronizes open tabs in the same browser using `BroadcastChannel`/storage events. It does **not** connect to a server, MySQL, or a live UBTS hub. The schema is a production-oriented data model, not an active connection. Do not use the demo for clinical decisions or live blood-product handling.
+1. Open this project folder in VS Code. It is the folder containing `index.html`.
+2. In VS Code, choose **Terminal > New Terminal**. Check that the terminal is in the project folder (the path shown before the prompt should end in `UBTS-Link`).
+3. Start the local web server by entering this command and pressing **Enter**:
+
+   ```powershell
+   py -m http.server 4173
+   ```
+
+   If you see a message that `py` is not recognized, try `python -m http.server 4173`. Leave this terminal running; closing it stops the server.
+4. Open a browser and go to **http://localhost:4173**. Do not open `index.html` directly from File Explorer.
+5. When the page loads, use the role selector at the top to switch between the sample hospital officer, clinician, UBTS hub staff, and system administrator views. The demo starts with sample facilities, staff, inventory, and requisitions; no login is needed.
+6. To stop the system, return to the terminal and press **Ctrl+C**.
+
+If the command reports that port `4173` is already in use, start it on another port (for example, `py -m http.server 8000`) and open **http://localhost:8000** instead.
+
+No package installation, build step, backend server, or MySQL setup is required to run the browser demo.
+
+The demo saves changes in the current browser's `localStorage`; tabs in that browser synchronize with one another. To start over, clear the site's stored data for `localhost` in your browser and reload the page.
+
+**Important:** this prototype does **not** connect to a backend server, MySQL, or a live UBTS hub. Its role selector is for demonstration, not secure authentication. Do not use it for clinical decisions or live blood-product handling.
+
+## Optional database schema
+
+The SQL file defines a MySQL data model for future backend integration; the browser demo does not read from or write to this database. MySQL is therefore not required to run the prototype.
+
+To create the schema separately, install MySQL and run this from the project folder in Windows Command Prompt:
+
+```cmd
+mysql -u root -p < database\schema.sql
+```
+
+Enter the MySQL password when prompted. This creates the `ubts_link` database and its tables; connecting the running app to it requires a backend API.
+
+In the schema, `requisition_granted` is one-to-zero-or-one per request, and `fulfillment_unit` associates a granted request with each issued blood unit so multi-unit requests remain traceable.
 
 For deployment, add a server-side API, password hashing and session/token handling, verified facility authorization, transactional MySQL repositories, network-level real-time events, and a configured SMS/push provider. Keep database credentials and auth secrets on the server.
-
-## Database
-
-Create the MySQL schema with `mysql < database/schema.sql`. `requisition_granted` is one-to-zero-or-one per request; `fulfillment_unit` associates the granted request with each issued blood unit so multi-unit requests remain traceable.
