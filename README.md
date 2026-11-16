@@ -22,22 +22,15 @@ Use the role selector in the top bar to switch between seeded demo accounts. Ver
 
 ## Run the system
 
-Follow these steps to run the browser demo on Windows:
+To start the browser demo on Windows, double-click **Run UBTS-Link.bat** in the project folder. It opens the app in your browser and starts the local server; keep the command window open while using the app, and press **Ctrl+C** in that window to stop it. If UBTS-Link is already running, the launcher opens it without starting a second server.
 
-1. Open this project folder in VS Code. It is the folder containing `index.html`.
-2. In VS Code, choose **Terminal > New Terminal**. Check that the terminal is in the project folder (the path shown before the prompt should end in `UBTS-Link`).
-3. Start the local web server by entering this command and pressing **Enter**:
+Alternatively, open this project folder in a terminal and start a server manually:
 
-   ```powershell
-   py -m http.server 4173
-   ```
+```powershell
+py -m http.server 4173
+```
 
-   If you see a message that `py` is not recognized, try `python -m http.server 4173`. Leave this terminal running; closing it stops the server.
-4. Open a browser and go to **http://localhost:4173**. Do not open `index.html` directly from File Explorer.
-5. When the page loads, use the role selector at the top to switch between the sample hospital officer, clinician, UBTS hub staff, and system administrator views. The demo starts with sample facilities, staff, inventory, and requisitions; no login is needed.
-6. To stop the system, return to the terminal and press **Ctrl+C**.
-
-If the command reports that port `4173` is already in use, start it on another port (for example, `py -m http.server 8000`) and open **http://localhost:8000** instead.
+If `py` is not recognized, try `python -m http.server 4173`. Then open **http://localhost:4173** in a browser; do not open `index.html` directly from File Explorer. Use the role selector to switch between the sample hospital officer, clinician, UBTS hub staff, and system administrator views. The demo starts with sample facilities, staff, inventory, and requisitions; no login is needed.
 
 No package installation, build step, backend server, or MySQL setup is required to run the browser demo.
 

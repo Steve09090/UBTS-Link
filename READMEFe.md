@@ -110,11 +110,18 @@ Service exceptions are displayed as error toasts for action buttons or inline fo
 
 ## 6. Styling and interaction design
 
-`styles.css` provides the core design system through CSS custom properties for colors, typography, borders, and shadows. It styles the navigation rail, top bar, page headings, metric cards, panels, tables, forms, status pills, notices, alerts, logs, dialogs, and toast messages.
+`styles.css` provides the core design system through CSS custom properties for medical forest greens, crimson blood accents, slate surfaces, typography, borders, and multi-layer shadows. It styles the navigation rail, top bar, page headings, metric cards, panels, tables, forms, status pills, notices, alerts, logs, dialogs, and toast messages.
 
-`src/ui/polish.css` adds transitions and hover/active states, a refined expandable facility card, and entry animations for dialogs and toasts. It also honors `prefers-reduced-motion` by minimizing animation and transition durations when the visitor has requested reduced motion.
+`src/ui/polish.css` adds transitions and hover/active states, a refined expandable facility card, live pulse beacons on emergency alerts, laser scan animations on the barcode station, CSS bar charts, and entry animations for dialogs and toasts. It also honors `prefers-reduced-motion` by minimizing animation and transition durations when the visitor has requested reduced motion.
 
-The interface uses semantic HTML elements and accessibility features such as navigation labels, visible keyboard focus styles, labels associated with form controls, dialog roles and modal attributes, live announcement regions for toasts, and an alert role for form errors. Wide data tables are placed in scrollable containers.
+Key interactive features:
+- **Navigation Badge Counters**: Active alert counts and pending requisition orders display live numerical badges directly in the side navigation rail.
+- **Stock Capacity Gauges & 1-Click Reorders**: Blood group cards feature interactive visual progress bars indicating safe vs low stock levels with 1-click requisition prefill.
+- **Quick-Filter Chips & Tabs**: Real-time filtering across blood groups (O+, O-, A+, etc.), requisition status tabs (Pending, In Transit, Fulfilled), and district filters.
+- **Scanner Station Simulator**: An animated laser scan beam with one-click sample barcode generation and in-stock unit quick-pick shortcuts.
+- **Unit Inspection Dialog**: Detailed modal showing full IST-128 lifecycle, expiration countdown, viral screening status, and direct dispensing trigger.
+- **Reporting & Data Export**: Visual distribution bar charts and CSV export functionality for inventory and audit records.
+- **Demo State Reset**: A top-bar control to reset browser storage back to initial seed state instantly for clean demonstration runs.
 
 ## 7. Running the frontend
 
