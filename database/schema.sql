@@ -78,13 +78,30 @@ CREATE TABLE requisition_granted (
   INDEX idx_fulfillment_status (status)
 );
 
+CREATE TABLE received_container (
+  container_id VARCHAR(36) PRIMARY KEY,
+  request_id VARCHAR(36) NOT NULL UNIQUE,
+  facility_id VARCHAR(36) NOT NULL,
+  received_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  opened_at TIMESTAMP NULL,
+  opened_by VARCHAR(36) NULL,
+  CONSTRAINT fk_container_request FOREIGN KEY (request_id) REFERENCES requisition_request(request_id),
+  CONSTRAINT fk_container_facility FOREIGN KEY (facility_id) REFERENCES facility(facility_id),
+  CONSTRAINT fk_container_staff FOREIGN KEY (opened_by) REFERENCES staff(staff_id),
+  INDEX idx_container_queue (facility_id,opened_at,received_at)
+);
+
 CREATE TABLE fulfillment_unit (
   fulfillment_id VARCHAR(36) NOT NULL,
   unit_id VARCHAR(36) NOT NULL,
+  container_id VARCHAR(36) NULL,
+  scanned_at TIMESTAMP NULL,
   PRIMARY KEY (fulfillment_id,unit_id),
   UNIQUE KEY uq_fulfillment_unit (unit_id),
   CONSTRAINT fk_fulfillment_unit_grant FOREIGN KEY (fulfillment_id) REFERENCES requisition_granted(fulfillment_id),
-  CONSTRAINT fk_fulfillment_unit_unit FOREIGN KEY (unit_id) REFERENCES blood_unit(unit_id)
+  CONSTRAINT fk_fulfillment_unit_unit FOREIGN KEY (unit_id) REFERENCES blood_unit(unit_id),
+  CONSTRAINT fk_fulfillment_unit_container FOREIGN KEY (container_id) REFERENCES received_container(container_id),
+  INDEX idx_container_scan_queue (container_id,scanned_at)
 );
 
 CREATE TABLE scan_event (

@@ -13,7 +13,7 @@ The source is split by layer and responsibility:
 
 ## Roles
 
-- **Hospital / Blood Bank Officer:** local inventory, intake and dispense scans, clinician-request review, hub requisitions, expiry alerts, reports, and audit history.
+- **Hospital / Blood Bank Officer:** local inventory grouped by blood type, intake and dispense scans, clinician-request review, multi-group hub requisitions, expiry alerts, reports, and audit history. Confirmed deliveries appear in a received-container queue; opening a container shows received, scanned, and awaiting-scan counts, with unique one-use demo barcodes available as a TXT download.
 - **Clinician:** cross-facility availability search, requisition submission, and facility alerts.
 - **UBTS Hub Staff:** regional stock dashboard, request approve/reject and dispatch, facility availability search, reports, and audit history.
 - **System Admin:** facility and staff verification, plus cross-facility search and audit access.

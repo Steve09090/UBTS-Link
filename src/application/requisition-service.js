@@ -1,4 +1,4 @@
-import { LOW_STOCK_THRESHOLD, makeId, today } from '../domain/constants.js';
+import { BLOOD_TYPES, LOW_STOCK_THRESHOLD, makeId, makeUniqueDemoBarcode, today } from '../domain/constants.js';
 
 export class RequisitionService {
   constructor(repository,auth,alertEngine) {
@@ -12,14 +12,33 @@ export class RequisitionService {
   }
 
   submit({bloodType,unitsRequested,urgency='routine'}) {
+    return this.submitMany([{bloodType,unitsRequested}],urgency)[0];
+  }
+
+  submitMany(items,urgency='routine') {
     const {staff,facility}=this.auth.require('hospital_officer','clinician');
-    const quantity=Number(unitsRequested);
-    if (!bloodType || !Number.isInteger(quantity) || quantity<1 || quantity>100) throw new Error('Enter a blood group and a quantity from 1 to 100.');
-    const request={id:makeId('REQ'),facilityId:facility.id,staffId:staff.id,bloodType,unitsRequested:quantity,urgency,status:staff.role==='clinician'?'awaiting_facility_review':'awaiting_hub_review',requestTime:new Date().toISOString()};
-    this.repository.state.requisitions.unshift(request);
-    this.alertEngine.add({facilityId:facility.id,type:'requisition',title:'Requisition submitted',detail:`${quantity} ${bloodType} units requested by ${staff.name}.`,requestId:request.id});
+    if (!Array.isArray(items)||items.length<1) throw new Error('Add at least one blood group to the requisition.');
+    if (!['routine','urgent','emergency'].includes(urgency)) throw new Error('Select a valid urgency level.');
+    const selectedGroups=new Set();
+    const normalizedItems=items.map(({bloodType,unitsRequested})=>{
+      const quantity=Number(unitsRequested);
+      if (!BLOOD_TYPES.includes(bloodType)) throw new Error('Select a valid blood group for every requisition line.');
+      if (selectedGroups.has(bloodType)) throw new Error('Each blood group can only appear once. Change or remove the duplicate line.');
+      selectedGroups.add(bloodType);
+      if (!Number.isInteger(quantity)||quantity<1||quantity>100) throw new Error('Enter a quantity from 1 to 100 for every blood group.');
+      return {bloodType,unitsRequested:quantity};
+    });
+    const requestTime=new Date().toISOString();
+    const requests=normalizedItems.map(({bloodType,unitsRequested})=>({
+      id:makeId('REQ'),facilityId:facility.id,staffId:staff.id,bloodType,unitsRequested,urgency,
+      status:staff.role==='clinician'?'awaiting_facility_review':'awaiting_hub_review',requestTime
+    }));
+    this.repository.state.requisitions.unshift(...requests);
+    for (const request of requests) {
+      this.alertEngine.add({facilityId:facility.id,type:'requisition',title:'Requisition submitted',detail:`${request.unitsRequested} ${request.bloodType} units requested by ${staff.name}.`,requestId:request.id});
+    }
     this.repository.save('requisition.created');
-    return request;
+    return requests;
   }
 
   autoCreateLowStock() {
@@ -78,14 +97,23 @@ export class RequisitionService {
     const request=this.find(requestId);
     if (request.facilityId!==facility.id||request.status!=='dispatched') throw new Error('No dispatched request for this facility.');
     const fulfillments=this.repository.state.fulfillments.filter(item=>item.requestId===requestId&&item.status==='dispatched');
+    if (!fulfillments.length) throw new Error('No dispatched units are available to receive.');
+    const existingBarcodes=new Set([
+      ...this.repository.state.units.map(unit=>unit.barcode.toUpperCase()),
+      ...(this.repository.state.receivedContainers||[]).flatMap(item=>(item.simulationBarcodes||[]).map(entry=>entry.barcode.toUpperCase()))
+    ]);
+    const unitIds=fulfillments.map(item=>item.unitId);
+    const container={id:makeId('CON'),requestId,facilityId:facility.id,unitIds,scannedUnitIds:[],simulationBarcodes:unitIds.map(unitId=>({unitId,barcode:makeUniqueDemoBarcode(existingBarcodes),usedAt:null})),openedAt:null,receivedAt:new Date().toISOString()};
+    this.repository.state.receivedContainers.unshift(container);
     for (const item of fulfillments) {
       const unit=this.repository.state.units.find(record=>record.id===item.unitId);
-      unit.facilityId=facility.id;unit.status='in_stock';
+      unit.facilityId=facility.id;unit.status='awaiting_scan';
+      item.containerId=container.id;
       item.status='received';item.receivingTime=new Date().toISOString();
-      this.repository.state.scanEvents.unshift({id:makeId('SCN'),unitId:unit.id,facilityId:facility.id,fulfillmentId:item.id,staffId:this.auth.current().staffId,eventType:'intake',timestamp:new Date().toISOString()});
     }
     request.status='fulfilled';
     this.repository.save('requisition.received');
+    return container;
   }
 
   find(requestId) {

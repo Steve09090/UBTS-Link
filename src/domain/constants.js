@@ -32,5 +32,13 @@ export const shiftDate = (days) => {
   return date.toISOString().slice(0,10);
 };
 export const makeId = (prefix) => `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
+export const makeUniqueDemoBarcode = (existingBarcodes) => {
+  let barcode;
+  do {
+    barcode=`DEMO-${makeId('UNIT')}`;
+  } while (existingBarcodes.has(barcode));
+  existingBarcodes.add(barcode);
+  return barcode;
+};
 export const formatDate = (value) => value ? new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(`${value.slice(0,10)}T00:00:00`)) : '—';
 export const formatDateTime = (value) => value ? new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value)) : '—';

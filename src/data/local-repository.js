@@ -14,7 +14,10 @@ export class LocalRepository {
   load() {
     try {
       const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (saved && Array.isArray(saved.facilities) && Array.isArray(saved.units)) return saved;
+      if (saved && Array.isArray(saved.facilities) && Array.isArray(saved.units)) {
+        saved.receivedContainers ||= [];
+        return saved;
+      }
     } catch {}
     const seeded=createSeedState();
     localStorage.setItem(STORAGE_KEY,JSON.stringify(seeded));
@@ -31,7 +34,10 @@ export class LocalRepository {
   reload() {
     try {
       const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (saved && Array.isArray(saved.units)) this.state=saved;
+      if (saved && Array.isArray(saved.units)) {
+        saved.receivedContainers ||= [];
+        this.state=saved;
+      }
     } catch {}
     return this.state;
   }

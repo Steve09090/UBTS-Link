@@ -41,6 +41,6 @@ export function createSeedState() {
     facilities,staff,units,requisitions:[
       {id:'REQ-2026-0041',facilityId:'FAC-001',staffId:'STF-002',bloodType:'O-',unitsRequested:4,urgency:'urgent',status:'awaiting_facility_review',requestTime:new Date(Date.now()-32*60000).toISOString()},
       {id:'REQ-2026-0042',facilityId:'FAC-002',staffId:'STF-006',bloodType:'A+',unitsRequested:3,urgency:'routine',status:'awaiting_hub_review',requestTime:new Date(Date.now()-85*60000).toISOString()}
-    ],fulfillments:[],scanEvents:[],alerts:[],outbox:[]
+    ],fulfillments:[],receivedContainers:[],scanEvents:[],alerts:[],outbox:[]
   };
 }

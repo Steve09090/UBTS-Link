@@ -1,5 +1,5 @@
 /* ====================================================
-   UBTS-Link Interactive Polish & Micro-Interactions
+   UBTS-Link Interactive Polish, Cursor Effects & Micro-Interactions
    ==================================================== */
 
 :root {
@@ -8,14 +8,14 @@
 }
 
 body {
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
   text-rendering: optimizeLegibility;
 }
 
 /* Custom Sleek Scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -24,7 +24,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--slate-300);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xs);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -45,30 +45,100 @@ body {
 .metric,
 .request-item,
 .alert-row,
-.log-row {
+.log-row,
+.blood,
+.dropzone {
   transition:
-    color 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 200ms ease,
-    transform 160ms cubic-bezier(.2, .75, .25, 1);
+    color 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 160ms ease,
+    transform 140ms cubic-bezier(.2, .75, .25, 1);
 }
 
-/* Buttons Polish & Shimmer Effect */
+/* Cursor Hover Spotlight Effect for Cards & Panels */
+.metric,
+.panel,
+.facility-card,
+.dropzone {
+  position: relative;
+}
+
+.metric::after,
+.facility-card::after,
+.dropzone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(34, 153, 125, 0.08), transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  z-index: 1;
+}
+
+.metric:hover::after,
+.facility-card:hover::after,
+.dropzone:hover::after {
+  opacity: 1;
+}
+
+/* Interactive Cursor Hover Elevations */
+.metric:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 76, 61, 0.25);
+  box-shadow: 0 6px 14px -2px rgba(15, 76, 61, 0.1);
+}
+
+.panel:hover {
+  border-color: rgba(15, 76, 61, 0.18);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--green-600);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.blood:hover {
+  transform: scale(1.06);
+  box-shadow: 0 2px 6px rgba(190, 18, 60, 0.18);
+}
+
+/* Table Row Interactive Hover Accent */
+tbody tr {
+  position: relative;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background-color: #f1f8f4;
+  box-shadow: inset 3px 0 0 var(--green-600);
+}
+
+/* Subtle Shimmer on Primary Button Hover */
 .btn {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1.5px);
 }
 
 .btn::after {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(108deg, transparent 20%, rgba(255, 255, 255, 0.22) 50%, transparent 80%);
+  background: linear-gradient(108deg, transparent 20%, rgba(255, 255, 255, 0.18) 50%, transparent 80%);
   content: "";
   transform: translateX(-130%);
-  transition: transform 500ms cubic-bezier(.2, .75, .25, 1);
+  transition: transform 420ms cubic-bezier(.2, .75, .25, 1);
 }
 
 .btn:hover::after {
@@ -78,7 +148,7 @@ body {
 .btn:active,
 .chip:active,
 .nav-list button:active {
-  transform: scale(.97);
+  transform: translateY(1px) scale(0.985);
 }
 
 /* Facility Card Accordion Polish */
@@ -96,33 +166,42 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--muted);
-  transition: transform 220ms ease;
-  font-size: 14px;
+  transition: transform 180ms ease;
+  font-size: 13px;
 }
 
 .facility-card[open] .facility-chevron {
   transform: rotate(180deg);
 }
 
-/* Glowing Pulse on Emergency & Low Stock Badges */
-.pulse-emergency {
-  animation: pulse-danger 1.8s infinite;
+/* Clean pulse indicator dot for critical items */
+.pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 4px;
+}
+
+.pulse-emergency .pulse-dot {
+  animation: pulse-danger 1.6s infinite;
 }
 
 @keyframes pulse-danger {
-  0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
-  70% { box-shadow: 0 0 0 7px rgba(225, 29, 72, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-.pulse-warning {
+.pulse-warning .pulse-dot {
   animation: pulse-warn 2s infinite;
 }
 
 @keyframes pulse-warn {
-  0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.45); }
-  70% { box-shadow: 0 0 0 6px rgba(217, 119, 6, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
 }
 
 /* Animations for Dialogs, Backdrops, Toasts */
@@ -134,7 +213,7 @@ body {
 @keyframes dialog-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(.97);
+    transform: translateY(10px) scale(.99);
   }
   to {
     opacity: 1;
@@ -145,88 +224,38 @@ body {
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(.95);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* Stepper Tracker for Requisitions */
-.requisition-stepper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 0;
-  font-size: 11px;
-}
-
-.stepper-step {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--muted);
-}
-
-.stepper-step.completed {
-  color: var(--green-700);
-  font-weight: 700;
-}
-
-.stepper-step.active {
-  color: var(--blue-700);
-  font-weight: 800;
-}
-
-.stepper-bullet {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.stepper-step.completed .stepper-bullet {
-  background: var(--green-700);
-  color: white;
-  border-color: var(--green-700);
-}
-
-.stepper-divider {
-  width: 16px;
-  height: 1px;
-  background: var(--slate-300);
-}
-
-/* Quick inspect card */
+/* Unit Spec Grid in Inspector */
 .unit-spec-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 14px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .unit-spec-card {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   background: var(--slate-50);
   border: 1px solid var(--slate-200);
 }
 
 .unit-spec-label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .unit-spec-value {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--slate-900);
   margin-top: 2px;

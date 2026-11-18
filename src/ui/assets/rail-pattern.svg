@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600" viewBox="0 0 300 600" fill="none">
+  <defs>
+    <radialGradient id="hubNode" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="railGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#34d399" stroke-width="0.5" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+
+  <rect width="300" height="600" fill="url(#railGrid)"/>
+
+  <!-- Network lines connecting regional centers -->
+  <path d="M50 80 L180 140 L240 280 L140 380 L60 500 L220 540" stroke="#34d399" stroke-width="0.8" stroke-opacity="0.07" stroke-dasharray="3 5"/>
+  <path d="M180 140 L60 500 M50 80 L240 280" stroke="#34d399" stroke-width="0.6" stroke-opacity="0.04" stroke-dasharray="2 4"/>
+
+  <!-- Hub nodes -->
+  <circle cx="50" cy="80" r="16" fill="url(#hubNode)"/>
+  <circle cx="50" cy="80" r="2.5" fill="#34d399" fill-opacity="0.3"/>
+
+  <circle cx="180" cy="140" r="22" fill="url(#hubNode)"/>
+  <circle cx="180" cy="140" r="3" fill="#34d399" fill-opacity="0.4"/>
+
+  <circle cx="240" cy="280" r="18" fill="url(#hubNode)"/>
+  <circle cx="240" cy="280" r="2.5" fill="#34d399" fill-opacity="0.3"/>
+
+  <circle cx="140" cy="380" r="20" fill="url(#hubNode)"/>
+  <circle cx="140" cy="380" r="3" fill="#34d399" fill-opacity="0.35"/>
+
+  <circle cx="60" cy="500" r="16" fill="url(#hubNode)"/>
+  <circle cx="60" cy="500" r="2.5" fill="#34d399" fill-opacity="0.3"/>
+
+  <circle cx="220" cy="540" r="14" fill="url(#hubNode)"/>
+  <circle cx="220" cy="540" r="2" fill="#34d399" fill-opacity="0.25"/>
+</svg>

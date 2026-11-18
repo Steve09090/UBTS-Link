@@ -60,12 +60,13 @@ The inventory page displays unit-level barcode, blood group, component, facility
 
 ### Scan app
 
-The scan page presents two forms:
+The scan page includes both optical barcode image recognition and keyboard/hardware-emulated movement entry:
 
+- **Optical Barcode Image Scanner:** accepts drag-and-drop or file uploads of barcode images/photos (PNG, JPG, WEBP). It decodes ISBT-128 / Code 128 symbology using client-side `BarcodeDetector` and 1D canvas raster scanline decoding, automatically extracts the DIN barcode, ABO/Rh blood group, component, collection date, expiry status, and viral screening state. One-click actions transfer decoded data directly into the intake or dispensing forms. Test label generation and downloadable sample label PNGs are also provided.
 - **Barcode intake:** captures a barcode, blood group, component, collection date, expiry date, and viral-test status.
 - **Dispense or expire:** accepts a barcode and movement event for an in-stock unit held by the current facility.
 
-The interface supports scanner-style keyboard input into a focused text field as well as manual entry. It does not connect to a dedicated scanner device. Validation messages appear in the form, and successful submissions rerender the page and show a toast.
+The interface supports image uploads, scanner-style keyboard input into a focused text field, and manual entry. Validation messages appear in the form, and successful submissions rerender the page and show a toast.
 
 ### Requisitions
 
