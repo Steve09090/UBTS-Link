@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" fill="none">
+  <defs>
+    <!-- Grid pattern -->
+    <pattern id="subtleGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0f4c3d" stroke-width="0.6" stroke-opacity="0.045"/>
+    </pattern>
+    <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f4c3d" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0f4c3d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bloodCellGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#be123c" stop-opacity="0.08"/>
+      <stop offset="60%" stop-color="#be123c" stop-opacity="0.02"/>
+      <stop offset="100%" stop-color="#be123c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base grid pattern fill -->
+  <rect width="600" height="600" fill="url(#subtleGrid)"/>
+
+  <!-- Network lattice connection lines -->
+  <path d="M80 120 L240 80 L360 200 L480 160 L540 320 L400 440 L200 400 L80 120 Z" stroke="#0f4c3d" stroke-width="0.8" stroke-opacity="0.05" stroke-dasharray="4 6"/>
+  <path d="M240 80 L200 400 M360 200 L400 440 M80 120 L360 200 L540 320" stroke="#0f4c3d" stroke-width="0.6" stroke-opacity="0.04" stroke-dasharray="2 4"/>
+
+  <!-- Subtle node points (hospital network) -->
+  <circle cx="80" cy="120" r="14" fill="url(#nodeGlow)"/>
+  <circle cx="80" cy="120" r="2.5" fill="#0f4c3d" fill-opacity="0.12"/>
+
+  <circle cx="240" cy="80" r="18" fill="url(#nodeGlow)"/>
+  <circle cx="240" cy="80" r="3" fill="#0f4c3d" fill-opacity="0.15"/>
+
+  <circle cx="360" cy="200" r="22" fill="url(#nodeGlow)"/>
+  <circle cx="360" cy="200" r="3.5" fill="#0f4c3d" fill-opacity="0.18"/>
+
+  <circle cx="480" cy="160" r="16" fill="url(#nodeGlow)"/>
+  <circle cx="480" cy="160" r="2.5" fill="#0f4c3d" fill-opacity="0.12"/>
+
+  <circle cx="540" cy="320" r="14" fill="url(#nodeGlow)"/>
+  <circle cx="540" cy="320" r="2.5" fill="#0f4c3d" fill-opacity="0.12"/>
+
+  <circle cx="400" cy="440" r="18" fill="url(#nodeGlow)"/>
+  <circle cx="400" cy="440" r="3" fill="#0f4c3d" fill-opacity="0.14"/>
+
+  <circle cx="200" cy="400" r="16" fill="url(#nodeGlow)"/>
+  <circle cx="200" cy="400" r="2.5" fill="#0f4c3d" fill-opacity="0.12"/>
+
+  <!-- Subtle organic blood cell watermarks -->
+  <circle cx="160" cy="260" r="45" fill="url(#bloodCellGlow)"/>
+  <circle cx="450" cy="280" r="55" fill="url(#bloodCellGlow)"/>
+  <circle cx="300" cy="520" r="40" fill="url(#bloodCellGlow)"/>
+  <circle cx="520" cy="80" r="35" fill="url(#bloodCellGlow)"/>
+</svg>

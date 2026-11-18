@@ -1,0 +1,272 @@
+/* ====================================================
+   UBTS-Link Interactive Polish, Cursor Effects & Micro-Interactions
+   ==================================================== */
+
+:root {
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Plus Jakarta Sans", "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+  text-rendering: optimizeLegibility;
+}
+
+/* Custom Sleek Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: var(--radius-xs);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-400);
+}
+
+/* Transitions on interactive elements */
+.btn,
+.nav-list button,
+.link-btn,
+.text-btn,
+.role-picker,
+.select,
+.search,
+.chip,
+.facility-card,
+.panel,
+.metric,
+.request-item,
+.alert-row,
+.log-row,
+.blood,
+.dropzone {
+  transition:
+    color 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 160ms ease,
+    transform 140ms cubic-bezier(.2, .75, .25, 1);
+}
+
+/* Cursor Hover Spotlight Effect for Cards & Panels */
+.metric,
+.panel,
+.facility-card,
+.dropzone {
+  position: relative;
+}
+
+.metric::after,
+.facility-card::after,
+.dropzone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(34, 153, 125, 0.08), transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  z-index: 1;
+}
+
+.metric:hover::after,
+.facility-card:hover::after,
+.dropzone:hover::after {
+  opacity: 1;
+}
+
+/* Interactive Cursor Hover Elevations */
+.metric:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 76, 61, 0.25);
+  box-shadow: 0 6px 14px -2px rgba(15, 76, 61, 0.1);
+}
+
+.panel:hover {
+  border-color: rgba(15, 76, 61, 0.18);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--green-600);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.blood:hover {
+  transform: scale(1.06);
+  box-shadow: 0 2px 6px rgba(190, 18, 60, 0.18);
+}
+
+/* Table Row Interactive Hover Accent */
+tbody tr {
+  position: relative;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background-color: #f1f8f4;
+  box-shadow: inset 3px 0 0 var(--green-600);
+}
+
+/* Subtle Shimmer on Primary Button Hover */
+.btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1.5px);
+}
+
+.btn::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(108deg, transparent 20%, rgba(255, 255, 255, 0.18) 50%, transparent 80%);
+  content: "";
+  transform: translateX(-130%);
+  transition: transform 420ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.btn:hover::after {
+  transform: translateX(130%);
+}
+
+.btn:active,
+.chip:active,
+.nav-list button:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* Facility Card Accordion Polish */
+.facility-card {
+  border: 1px solid var(--line);
+}
+
+.facility-card[open] > .facility-summary {
+  border-bottom: 1px solid var(--line);
+  background: #f4f8f5;
+}
+
+.facility-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 180ms ease;
+  font-size: 13px;
+}
+
+.facility-card[open] .facility-chevron {
+  transform: rotate(180deg);
+}
+
+/* Clean pulse indicator dot for critical items */
+.pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 4px;
+}
+
+.pulse-emergency .pulse-dot {
+  animation: pulse-danger 1.6s infinite;
+}
+
+@keyframes pulse-danger {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.pulse-warning .pulse-dot {
+  animation: pulse-warn 2s infinite;
+}
+
+@keyframes pulse-warn {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Animations for Dialogs, Backdrops, Toasts */
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Unit Spec Grid in Inspector */
+.unit-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.unit-spec-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+}
+
+.unit-spec-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.unit-spec-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin-top: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
