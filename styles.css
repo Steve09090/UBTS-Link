@@ -1410,6 +1410,34 @@ tbody tr:last-child td {
   background: var(--slate-50);
 }
 
+.low-stock-suggestions {
+  border: 1px solid var(--amber-200);
+  border-radius: var(--radius-md);
+  background: var(--amber-50);
+}
+
+.low-stock-suggestions summary {
+  padding: 10px 12px;
+  color: var(--amber-800);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.low-stock-suggestion-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.low-stock-suggestion-list p {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .container-scan-form label {
   font-weight: 600;
 }

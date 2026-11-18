@@ -1,5 +1,7 @@
 export const BLOOD_TYPES = ['O+','O-','A+','A-','B+','B-','AB+','AB-'];
-export const LOW_STOCK_THRESHOLD = 6;
+export const LOW_STOCK_THRESHOLD = 20;
+export const AUTO_REQUISITION_THRESHOLD = 10;
+export const AUTO_REQUISITION_QUANTITY = 15;
 export const STORAGE_KEY = 'ubts-link-platform-v2';
 export const ROLES = {
   hospital_officer: 'Hospital / Blood Bank Officer',

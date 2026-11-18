@@ -52,7 +52,7 @@ The role selector switches among seeded demonstration accounts. It is not a logi
 
 ### Hospital dashboard
 
-The local dashboard presents facility-level available stock, blood groups at or below the six-unit reorder point, stock expiring within seven days, active alerts, recent requests, and scan activity. Shortcuts navigate to scanning and new requisition entry.
+The local dashboard presents facility-level available stock, blood groups at or below the 20-unit reorder point, stock expiring within seven days, active alerts, recent requests, and scan activity. Shortcuts navigate to scanning and new requisition entry.
 
 ### Inventory
 

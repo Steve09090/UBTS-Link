@@ -1,4 +1,4 @@
-import { BLOOD_TYPES, NAVIGATION, ROLES, STORAGE_KEY } from './domain/constants.js';
+import { AUTO_REQUISITION_QUANTITY, BLOOD_TYPES, LOW_STOCK_THRESHOLD, NAVIGATION, ROLES, STORAGE_KEY } from './domain/constants.js';
 import { LocalRepository } from './data/local-repository.js';
 import { AuthService } from './application/auth-service.js';
 import { AlertEngine } from './application/alert-engine.js';
@@ -79,6 +79,48 @@ function showError(formId, message) {
   }
 }
 
+function refreshRequestLineControls(container) {
+  if (!container) return;
+  const rows = [...container.querySelectorAll('.request-line')];
+  const selectedGroups = new Set(rows.map(row => row.querySelector('[name="bloodTypes[]"]').value));
+  rows.forEach(row => {
+    row.querySelector('[data-action="remove-request-line"]').disabled = rows.length === 1;
+  });
+  container.closest('#request-form')?.querySelectorAll('.low-stock-suggestion').forEach(button => {
+    const bloodType = button.dataset.bloodType;
+    const added = selectedGroups.has(bloodType);
+    button.disabled = added;
+    button.textContent = added
+      ? `${bloodType} added`
+      : `Add ${bloodType} (${button.dataset.stockCount} in stock)`;
+  });
+}
+
+function addRequestLine(container, bloodType, quantity = 4) {
+  if (!container) return;
+  const rows = [...container.querySelectorAll('.request-line')];
+  if (rows.length >= BLOOD_TYPES.length) {
+    toast('All blood groups are already listed.', true);
+    return;
+  }
+  const selectedGroups = new Set(rows.map(row => row.querySelector('[name="bloodTypes[]"]').value));
+  const nextGroup = bloodType || BLOOD_TYPES.find(type => !selectedGroups.has(type));
+  if (!nextGroup) {
+    toast('All blood groups are already listed.', true);
+    return;
+  }
+  if (selectedGroups.has(nextGroup)) {
+    toast(`${nextGroup} is already in this requisition.`, true);
+    return;
+  }
+  const row = rows[0].cloneNode(true);
+  row.querySelector('[name="bloodTypes[]"]').value = nextGroup;
+  row.querySelector('[name="unitQuantities[]"]').value = String(quantity);
+  container.append(row);
+  refreshRequestLineControls(container);
+  row.querySelector('[name="bloodTypes[]"]').focus();
+}
+
 async function handleBarcodeFile(file) {
   if (!file) return;
   toast('Processing barcode image...');
@@ -102,26 +144,29 @@ async function handleBarcodeFile(file) {
 async function execute(action, id, verified, element) {
   if (action === 'open-request' || action === 'quick-reorder') {
     const bloodType = element?.dataset.bloodType || 'O-';
-    dialogRoot.innerHTML = requestDialog(bloodType);
-    dialogRoot.querySelector('#request-lines [name="bloodTypes[]"]')?.focus();
+    const session = auth.current();
+    const lowStockGroups = session.role === 'hospital_officer'
+      ? BLOOD_TYPES.map(type => ({ bloodType: type, stockCount: inventory.stock(session.facilityId, type) }))
+        .filter(group => group.stockCount <= LOW_STOCK_THRESHOLD)
+      : [];
+    dialogRoot.innerHTML = requestDialog(bloodType, {
+      lowStockGroups,
+      showLowStock: session.role === 'hospital_officer',
+      clinicianRequest: session.role === 'clinician'
+    });
+    const requestLines = dialogRoot.querySelector('#request-lines');
+    refreshRequestLineControls(requestLines);
+    requestLines?.querySelector('[name="bloodTypes[]"]')?.focus();
     return;
   }
 
   if (action === 'add-request-line') {
-    const container = dialogRoot.querySelector('#request-lines');
-    const rows = [...(container?.querySelectorAll('.request-line') || [])];
-    if (rows.length >= BLOOD_TYPES.length) {
-      toast('All blood groups are already listed.', true);
-      return;
-    }
-    const selected = new Set(rows.map(row => row.querySelector('[name="bloodTypes[]"]').value));
-    const nextGroup = BLOOD_TYPES.find(type => !selected.has(type));
-    const row = rows[0].cloneNode(true);
-    row.querySelector('[name="bloodTypes[]"]').value = nextGroup;
-    row.querySelector('[name="unitQuantities[]"]').value = '4';
-    container.append(row);
-    container.querySelectorAll('[data-action="remove-request-line"]').forEach(button => { button.disabled = false; });
-    row.querySelector('[name="bloodTypes[]"]').focus();
+    addRequestLine(dialogRoot.querySelector('#request-lines'), null);
+    return;
+  }
+
+  if (action === 'add-low-stock-line') {
+    addRequestLine(dialogRoot.querySelector('#request-lines'), element?.dataset.bloodType, AUTO_REQUISITION_QUANTITY);
     return;
   }
 
@@ -461,6 +506,8 @@ document.addEventListener('change', event => {
     if (file) {
       handleBarcodeFile(file);
     }
+  } else if (event.target.matches('#request-lines select[name="bloodTypes[]"]')) {
+    refreshRequestLineControls(document.getElementById('request-lines'));
   } else if (event.target.id === 'role-picker') {
     try {
       const session = auth.setRole(event.target.value);

@@ -1,4 +1,4 @@
-import { BLOOD_TYPES, LOW_STOCK_THRESHOLD, makeId, makeUniqueDemoBarcode, today } from '../domain/constants.js';
+import { AUTO_REQUISITION_QUANTITY, AUTO_REQUISITION_THRESHOLD, BLOOD_TYPES, makeId, makeUniqueDemoBarcode, today } from '../domain/constants.js';
 
 export class RequisitionService {
   constructor(repository,auth,alertEngine) {
@@ -47,9 +47,19 @@ export class RequisitionService {
       if (!linkedHub?.verified) continue;
       for (const bloodType of ['O+','O-','A+','A-','B+','B-','AB+','AB-']) {
         const count=this.repository.state.units.filter(unit=>unit.facilityId===facility.id&&unit.bloodType===bloodType&&unit.status==='in_stock'&&unit.viralTestStatus==='negative'&&unit.expiryDate>today()).length;
-        if (count>LOW_STOCK_THRESHOLD||this.activeFor(facility.id,bloodType)) continue;
-        const request={id:makeId('REQ'),facilityId:facility.id,staffId:null,bloodType,unitsRequested:Math.max(LOW_STOCK_THRESHOLD*2-count,LOW_STOCK_THRESHOLD),urgency:count<=2?'urgent':'routine',status:'awaiting_hub_review',requestTime:new Date().toISOString(),automated:true};
+        if (count>AUTO_REQUISITION_THRESHOLD) continue;
+        const pendingAutomatic=this.repository.state.requisitions.find(request=>request.facilityId===facility.id&&request.bloodType===bloodType&&request.automated&&request.status==='awaiting_hub_review');
+        if (pendingAutomatic) {
+          if (pendingAutomatic.unitsRequested!==AUTO_REQUISITION_QUANTITY) {
+            pendingAutomatic.unitsRequested=AUTO_REQUISITION_QUANTITY;
+            this.alertEngine.add({facilityId:linkedHub.id,type:'requisition',title:'Automatic requisition updated',detail:`${facility.name} has ${count} safe ${bloodType} units; the pending automatic request is now ${AUTO_REQUISITION_QUANTITY} units.`,requestId:pendingAutomatic.id});
+          }
+          continue;
+        }
+        if (this.activeFor(facility.id,bloodType)) continue;
+        const request={id:makeId('REQ'),facilityId:facility.id,staffId:null,bloodType,unitsRequested:AUTO_REQUISITION_QUANTITY,urgency:count<=2?'urgent':'routine',status:'awaiting_hub_review',requestTime:new Date().toISOString(),automated:true};
         this.repository.state.requisitions.unshift(request);
+        this.alertEngine.add({facilityId:linkedHub.id,type:'requisition',title:'Automatic requisition received',detail:`${facility.name} has ${count} safe ${bloodType} units; a request for ${AUTO_REQUISITION_QUANTITY} units is awaiting hub review.`,requestId:request.id});
       }
     }
   }

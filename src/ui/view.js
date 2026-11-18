@@ -345,7 +345,7 @@ function overviewPage(state, session) {
     </section>
 
     <div class="columns">
-      ${panel('Stock by Blood Group', 'Live inventory against 6-unit reorder point', `
+      ${panel('Stock by Blood Group', `Live inventory against ${LOW_STOCK_THRESHOLD}-unit reorder point`, `
         <div class="table-scroll">
           <table>
             <thead>
@@ -1203,7 +1203,7 @@ export function renderDialog(title, description, body) {
   `;
 }
 
-export function requestDialog(prefilledBloodType = 'O-') {
+export function requestDialog(prefilledBloodType = 'O-', {lowStockGroups=[],showLowStock=false,clinicianRequest=false}={}) {
   const requestLine = (selectedType, quantity = 4) => `
     <div class="request-line">
       <div class="field">
@@ -1221,15 +1221,31 @@ export function requestDialog(prefilledBloodType = 'O-') {
       <button type="button" class="btn btn-secondary btn-small" data-action="remove-request-line" disabled>Remove</button>
     </div>
   `;
+  const lowStockMenu=showLowStock?`
+    <details class="low-stock-suggestions">
+      <summary>Low Stock (optional)</summary>
+      <div class="low-stock-suggestion-list">
+        <p>Blood groups at or below ${LOW_STOCK_THRESHOLD} safe units. Add any suggestions you want included.</p>
+        ${lowStockGroups.length?lowStockGroups.map(({bloodType,stockCount})=>`
+          <button type="button" class="chip low-stock-suggestion" data-action="add-low-stock-line" data-blood-type="${escapeHtml(bloodType)}" data-stock-count="${stockCount}">
+            Add ${escapeHtml(bloodType)} (${stockCount} in stock)
+          </button>
+        `).join(''):'<span class="panel-note">No blood groups are currently at the low-stock threshold.</span>'}
+      </div>
+    </details>
+  `:'';
   return renderDialog(
     'Submit Blood Requisition',
-    'Request one or more blood groups in a single submission. Each group is tracked through the existing review and dispatch flow.',
+    clinicianRequest
+      ? 'Your request will be reviewed by the Hospital / Blood Bank Officer before it is sent to the UBTS Hub.'
+      : 'Request one or more blood groups in a single submission. Each group is tracked through the existing review and dispatch flow.',
     `
       <form id="request-form" class="dialog-body">
         <div id="request-lines" class="request-lines">
           ${requestLine(prefilledBloodType)}
         </div>
         <button type="button" class="btn btn-secondary btn-small" data-action="add-request-line">＋ Add another blood group</button>
+        ${lowStockMenu}
         <div class="form-grid">
           <div class="field full">
             <label for="request-urgency">Urgency Level</label>
